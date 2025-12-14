@@ -25,14 +25,17 @@ export default function VehiclesPage() {
                 seats: Number(currentVehicle.seats),
             } as any;
 
+            console.log("Submitting vehicle:", vehicleData); // Debug log
+
             if (isEditing && currentVehicle.id) {
                 await updateVehicle(currentVehicle.id, vehicleData);
             } else {
                 await addVehicle(vehicleData);
             }
             setIsModalOpen(false);
-        } catch (error) {
-            console.error(error);
+        } catch (error: any) {
+            console.error("Error saving vehicle:", error);
+            alert(`Failed to save vehicle: ${error.message || error}`);
         }
     };
 

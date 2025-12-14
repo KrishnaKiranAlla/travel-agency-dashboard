@@ -9,12 +9,12 @@ import {
 } from "firebase/firestore";
 
 const firebaseConfig = {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyMockKeyForBuild",
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "mock-project.firebaseapp.com",
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "mock-project",
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "mock-project.appspot.com",
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "00000000000",
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:00000000000:web:00000000000000",
+    apiKey: "AIzaSyAg6gh-Uxfp9J6lkmsuvYFjloledQZItmY",
+    authDomain: "travel-agency-69260.firebaseapp.com",
+    projectId: "travel-agency-69260",
+    storageBucket: "travel-agency-69260.firebasestorage.app",
+    messagingSenderId: "499714729222",
+    appId: "1:499714729222:web:9872b945e18c1d1c0eaa87"
 };
 
 let app: FirebaseApp;

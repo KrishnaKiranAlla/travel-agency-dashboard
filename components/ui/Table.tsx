@@ -28,7 +28,7 @@ export function Table<T extends { id: string }>({ data, columns, actions }: Tabl
                     {data.map((item) => (
                         <tr key={item.id}>
                             {columns.map((col, i) => (
-                                <td key={i} className={col.className}>
+                                <td key={i} className={col.className} data-label={col.header}>
                                     {typeof col.accessor === 'function'
                                         ? col.accessor(item)
                                         : (item[col.accessor] as React.ReactNode)}

@@ -76,26 +76,23 @@
 
 @media (max-width: 768px) {
     .overlay {
-        padding: 0;
-        align-items: flex-end;
+        padding: 1rem;
+        align-items: center;
+        /* Center vertically on mobile too */
     }
 
     .modal {
         max-width: 100%;
-        max-height: 85vh;
-        border-radius: var(--radius) var(--radius) 0 0;
-        animation: slideUpMobile 0.3s ease-out;
+        max-height: 90vh;
+        /* Allow more height */
+        border-radius: var(--radius);
+        /* Rounded all corners */
+        animation: slideUp 0.25s ease-out;
+        /* Use same animation as desktop */
+        margin: 0;
     }
 
-    @keyframes slideUpMobile {
-        from {
-            transform: translateY(100%);
-        }
-
-        to {
-            transform: translateY(0);
-        }
-    }
+    /* Remove the bottom-sheet slide up animation override */
 
     .header {
         padding: 1rem 1.25rem;
