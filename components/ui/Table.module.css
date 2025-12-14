@@ -111,6 +111,26 @@
         width: 100%;
     }
 
+    .table tr.emptyRow {
+        background: transparent;
+        box-shadow: none;
+        align-items: center;
+    }
+
+    .table td.empty {
+        display: flex;
+        justify-content: center;
+        text-align: center;
+        width: 100%;
+        padding: 0;
+        border: none;
+        color: var(--text-muted);
+    }
+
+    .table td.empty::before {
+        display: none;
+    }
+
     .table td[data-label="Actions"] {
         display: none;
         /* Hide the text "Actions" label */

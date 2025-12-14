@@ -38,7 +38,7 @@ export function Table<T extends { id: string }>({ data, columns, actions }: Tabl
                         </tr>
                     ))}
                     {data.length === 0 && (
-                        <tr>
+                        <tr className={styles.emptyRow}>
                             <td colSpan={columns.length + (actions ? 1 : 0)} className={styles.empty}>
                                 No data found.
                             </td>
