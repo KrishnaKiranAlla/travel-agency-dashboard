@@ -1,0 +1,46 @@
+.container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-body);
+}
+
+.form {
+    width: 100%;
+    max-width: 400px;
+    padding: 2.5rem;
+    background-color: var(--bg-card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.error {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--color-danger);
+    padding: 0.75rem;
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    text-align: center;
+}
