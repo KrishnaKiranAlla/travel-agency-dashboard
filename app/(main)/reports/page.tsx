@@ -80,35 +80,39 @@ export default function ReportsPage() {
 
     return (
         <div>
-            <h1 className="text-xl font-bold" style={{ marginBottom: '1.5rem' }}>Reports</h1>
+            <div className="page-header">
+                <h1 className="text-xl font-bold">Reports</h1>
+            </div>
 
             <Card style={{ marginBottom: '2rem' }}>
-                <form onSubmit={generateReport} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end' }}>
-                    <Input
-                        label="Start Date"
-                        type="date"
-                        value={startDate}
-                        onChange={e => setStartDate(e.target.value)}
-                        required
-                        style={{ width: '200px' }}
-                    />
-                    <Input
-                        label="End Date"
-                        type="date"
-                        value={endDate}
-                        onChange={e => setEndDate(e.target.value)}
-                        required
-                        style={{ width: '200px' }}
-                    />
+                <form onSubmit={generateReport} className="flex flex-wrap gap-4 items-end">
+                    <div style={{ minWidth: '200px', flex: 1 }}>
+                        <Input
+                            label="Start Date"
+                            type="date"
+                            value={startDate}
+                            onChange={e => setStartDate(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div style={{ minWidth: '200px', flex: 1 }}>
+                        <Input
+                            label="End Date"
+                            type="date"
+                            value={endDate}
+                            onChange={e => setEndDate(e.target.value)}
+                            required
+                        />
+                    </div>
                     <Button type="submit" isLoading={loading}>
-                        <BarChart3 size={18} /> Generate Report
+                        <BarChart3 size={18} /> Generate
                     </Button>
                 </form>
             </Card>
 
             {generated && reportData && (
                 <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
+                    <div className="stats-grid">
                         <Card>
                             <div className="text-muted text-sm font-bold">Total Trips</div>
                             <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--color-primary)' }}>{reportData.totalTrips}</div>
@@ -119,7 +123,7 @@ export default function ReportsPage() {
                         </Card>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>
+                    <div className="dashboard-grid">
                         <Card title="Trip Details">
                             <Table data={trips} columns={columns} />
                         </Card>
@@ -128,7 +132,7 @@ export default function ReportsPage() {
                             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                 <thead>
                                     <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border-color)' }}>
-                                        <th style={{ padding: '0.5rem', fontSize: '0.9rem' }}>Vehicle ID</th>
+                                        <th style={{ padding: '0.5rem', fontSize: '0.9rem' }}>Vehicle</th>
                                         <th style={{ padding: '0.5rem', fontSize: '0.9rem' }}>Trips</th>
                                     </tr>
                                 </thead>

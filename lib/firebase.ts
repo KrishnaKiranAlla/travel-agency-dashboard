@@ -1,6 +1,7 @@
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
+import { getAuth, Auth } from "firebase/auth";
 import {
+    Firestore,
     getFirestore,
     initializeFirestore,
     persistentLocalCache,
@@ -16,15 +17,29 @@ const firebaseConfig = {
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:00000000000:web:00000000000000",
 };
 
-// Initialize Firebase
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const auth = getAuth(app);
+let app: FirebaseApp;
+let auth: Auth;
+let db: Firestore;
 
-// Use initializeFirestore to configure persistence immediately (fixes deprecation warning)
-const db = initializeFirestore(app, {
-    localCache: persistentLocalCache({
-        tabManager: persistentMultipleTabManager()
-    })
-});
+// Initialize Firebase - handle both server and client
+if (!getApps().length) {
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+
+    // Only use persistence on client side
+    if (typeof window !== 'undefined') {
+        db = initializeFirestore(app, {
+            localCache: persistentLocalCache({
+                tabManager: persistentMultipleTabManager()
+            })
+        });
+    } else {
+        db = getFirestore(app);
+    }
+} else {
+    app = getApp();
+    auth = getAuth(app);
+    db = getFirestore(app);
+}
 
 export { auth, db };

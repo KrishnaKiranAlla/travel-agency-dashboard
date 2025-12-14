@@ -6,33 +6,49 @@
 }
 
 .label {
-    font-size: 0.875rem;
+    font-size: 0.85rem;
     font-weight: 500;
     color: var(--text-secondary);
 }
 
 .input {
-    padding: 0.75rem 1rem;
-    border-radius: var(--radius);
+    padding: 0.7rem 0.9rem;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--border-color);
-    background-color: var(--bg-input);
+    background-color: var(--bg-card);
     color: var(--text-main);
     transition: var(--transition);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     outline: none;
     width: 100%;
 }
 
+.input::placeholder {
+    color: var(--text-muted);
+}
+
 .input:focus {
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 
 .hasError {
     border-color: var(--color-danger);
 }
 
+.hasError:focus {
+    box-shadow: 0 0 0 3px hsl(0, 70%, 95%);
+}
+
 .error {
     font-size: 0.75rem;
     color: var(--color-danger);
+}
+
+@media (max-width: 768px) {
+    .input {
+        padding: 0.65rem 0.8rem;
+        font-size: 16px;
+        /* Prevent zoom on iOS */
+    }
 }

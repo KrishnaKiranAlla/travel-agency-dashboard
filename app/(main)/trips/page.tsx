@@ -142,22 +142,20 @@ export default function TripsPage() {
 
     return (
         <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem', alignItems: 'center' }}>
+            <div className="page-header">
                 <h1 className="text-xl font-bold">Trips</h1>
                 <Button onClick={openAddModal}>
                     <Plus size={18} /> Add Trip
                 </Button>
             </div>
 
-            <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
+            <div className="flex gap-4 mb-6 flex-wrap">
                 <Select
                     value={filterVehicle}
                     onChange={(e) => setFilterVehicle(e.target.value)}
                     options={vehicles.map(v => ({ label: v.numberPlate, value: v.id }))}
-                    style={{ width: '200px' }}
-                // I need to add a default empty option to Select or handle it
+                    style={{ minWidth: '200px' }}
                 />
-                {/* My Select component doesn't support "All" easily unless I add it to options */}
 
                 <Select
                     value={filterStatus}
@@ -169,7 +167,7 @@ export default function TripsPage() {
                         { label: 'Completed', value: 'completed' },
                         { label: 'Cancelled', value: 'cancelled' },
                     ]}
-                    style={{ width: '200px' }}
+                    style={{ minWidth: '200px' }}
                 />
             </div>
 

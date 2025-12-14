@@ -8,13 +8,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
     if (loading) {
         return (
-            <div style={{
-                height: '100vh',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'var(--text-muted)'
-            }}>
+            <div className="loading-container" style={{ height: '100vh' }}>
                 Loading...
             </div>
         );
@@ -25,16 +19,28 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
     return (
         <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--bg-body)' }}>
             <Sidebar />
-            <main style={{
-                marginLeft: '260px',
-                flex: 1,
-                padding: '2rem',
-                width: 'calc(100% - 260px)'
-            }}>
+            <main className="main-content">
                 <div className="container">
                     {children}
                 </div>
             </main>
+            <style jsx>{`
+        .main-content {
+          margin-left: 260px;
+          flex: 1;
+          padding: 2rem;
+          width: calc(100% - 260px);
+        }
+        
+        @media (max-width: 768px) {
+          .main-content {
+            margin-left: 0;
+            width: 100%;
+            padding: 1rem;
+            padding-top: calc(60px + 1rem);
+          }
+        }
+      `}</style>
         </div>
     );
 }

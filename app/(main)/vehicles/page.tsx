@@ -77,7 +77,7 @@ export default function VehiclesPage() {
 
     return (
         <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem', alignItems: 'center' }}>
+            <div className="page-header">
                 <h1 className="text-xl font-bold">Vehicles</h1>
                 <Button onClick={openAddModal}>
                     <Plus size={18} /> Add Vehicle

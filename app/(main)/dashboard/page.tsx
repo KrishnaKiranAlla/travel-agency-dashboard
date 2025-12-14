@@ -76,9 +76,11 @@ export default function DashboardPage() {
 
     return (
         <div>
-            <h1 className="text-xl font-bold" style={{ marginBottom: '1.5rem' }}>Dashboard Overview</h1>
+            <div className="page-header">
+                <h1 className="text-xl font-bold">Dashboard Overview</h1>
+            </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
+            <div className="stats-grid">
                 {statCards.map((stat, i) => (
                     <Card key={i} className="stat-card">
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
@@ -94,14 +96,14 @@ export default function DashboardPage() {
                 ))}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>
+            <div className="dashboard-grid">
                 <Card title="Today's Trips" className="trips-card">
                     <Table
                         data={stats.todayTripsList}
                         columns={tripColumns}
                     />
                     {stats.todayTripsList.length === 0 && !loading && (
-                        <div style={{ textAlign: 'center', padding: '1rem' }}>No trips scheduled for today.</div>
+                        <div className="empty-state">No trips scheduled for today.</div>
                     )}
                     <div style={{ marginTop: '1rem', textAlign: 'right' }}>
                         <Link href="/trips" style={{ fontSize: '0.9rem', color: 'var(--color-primary)', fontWeight: 500 }}>
@@ -112,8 +114,8 @@ export default function DashboardPage() {
 
                 <Card title="Upcoming Expiries">
                     {expiringVehicles.length === 0 && (
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
-                            <CheckCircle size={32} style={{ marginBottom: '0.5rem', opacity: 0.5 }} />
+                        <div className="empty-state">
+                            <CheckCircle size={32} />
                             <p>No upcoming expiries</p>
                         </div>
                     )}
@@ -125,7 +127,7 @@ export default function DashboardPage() {
                                 gap: '1rem',
                                 padding: '0.75rem',
                                 borderRadius: 'var(--radius)',
-                                backgroundColor: 'rgba(239, 68, 68, 0.05)',
+                                backgroundColor: 'hsl(0, 70%, 98%)',
                                 borderLeft: '3px solid var(--color-danger)'
                             }}>
                                 <AlertTriangle size={20} color="var(--color-danger)" />

@@ -1,6 +1,6 @@
 .button {
-    padding: 0.75rem 1.5rem;
-    border-radius: var(--radius);
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius-sm);
     font-weight: 500;
     cursor: pointer;
     transition: var(--transition);
@@ -9,22 +9,25 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    white-space: nowrap;
 }
 
 .sm {
-    padding: 0.4rem 0.75rem;
-    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+    border-radius: 6px;
 }
 
 .md {
-    padding: 0.75rem 1.5rem;
-    font-size: 0.95rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
 }
 
 .primary {
     background-color: var(--color-primary);
     color: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .primary:hover {
@@ -38,9 +41,9 @@
 }
 
 .outline:hover {
-    border-color: var(--text-main);
+    border-color: var(--text-muted);
     color: var(--text-main);
-    background-color: var(--bg-card-hover);
+    background-color: var(--bg-body);
 }
 
 .danger {
@@ -60,4 +63,15 @@
     opacity: 0.6;
     cursor: not-allowed;
     pointer-events: none;
+}
+
+@media (max-width: 768px) {
+    .button {
+        padding: 0.65rem 1rem;
+        font-size: 0.85rem;
+    }
+
+    .sm {
+        padding: 0.45rem 0.65rem;
+    }
 }
