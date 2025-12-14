@@ -2,6 +2,7 @@ import { Timestamp } from 'firebase/firestore';
 
 export interface Vehicle {
     id: string;
+    name: string; // e.g. "Create Innova White"
     numberPlate: string;
     type: string;
     seats: number;

@@ -58,7 +58,14 @@ export default function VehiclesPage() {
     };
 
     const columns = [
-        { header: 'Number Plate', accessor: 'numberPlate' as keyof Vehicle },
+        {
+            header: 'Vehicle', accessor: (v: Vehicle) => (
+                <div>
+                    <div style={{ fontWeight: 500 }}>{v.name || 'Unnamed'}</div>
+                    <div className="text-muted text-sm">{v.numberPlate}</div>
+                </div>
+            )
+        },
         { header: 'Type', accessor: 'type' as keyof Vehicle },
         { header: 'Seats', accessor: 'seats' as keyof Vehicle },
         {
@@ -66,7 +73,7 @@ export default function VehiclesPage() {
                 <span style={{
                     padding: '0.25rem 0.6rem',
                     borderRadius: '99px',
-                    backgroundColor: v.status === 'active' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                    backgroundColor: v.status === 'active' ? 'hsl(150, 70%, 95%)' : 'hsl(0, 70%, 95%)',
                     color: v.status === 'active' ? 'var(--color-success)' : 'var(--color-danger)',
                     fontSize: '0.75rem',
                     fontWeight: 600,
@@ -108,6 +115,13 @@ export default function VehiclesPage() {
                 title={isEditing ? 'Edit Vehicle' : 'Add Vehicle'}
             >
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <Input
+                        label="Vehicle Name"
+                        value={currentVehicle.name || ''}
+                        onChange={e => setCurrentVehicle({ ...currentVehicle, name: e.target.value })}
+                        required
+                        placeholder="e.g. White Innova Crysta"
+                    />
                     <Input
                         label="Number Plate"
                         value={currentVehicle.numberPlate || ''}

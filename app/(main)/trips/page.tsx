@@ -91,7 +91,7 @@ export default function TripsPage() {
 
     const getVehicleNumber = (id: string) => {
         const v = vehicles.find(v => v.id === id);
-        return v ? v.numberPlate : 'Unknown';
+        return v ? (v.name ? `${v.name} (${v.numberPlate})` : v.numberPlate) : 'Unknown';
     };
 
     const columns = [
@@ -153,7 +153,13 @@ export default function TripsPage() {
                 <Select
                     value={filterVehicle}
                     onChange={(e) => setFilterVehicle(e.target.value)}
-                    options={vehicles.map(v => ({ label: v.numberPlate, value: v.id }))}
+                    options={[
+                        { label: 'All Vehicles', value: '' },
+                        ...vehicles.map(v => ({
+                            label: v.name ? `${v.name} (${v.numberPlate})` : v.numberPlate,
+                            value: v.id
+                        }))
+                    ]}
                     style={{ minWidth: '200px' }}
                 />
 
@@ -194,7 +200,10 @@ export default function TripsPage() {
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     <Select
                         label="Vehicle"
-                        options={vehicles.filter(v => v.status === 'active').map(v => ({ label: v.numberPlate, value: v.id }))}
+                        options={vehicles.filter(v => v.status === 'active').map(v => ({
+                            label: v.name ? `${v.name} (${v.numberPlate})` : v.numberPlate,
+                            value: v.id
+                        }))}
                         value={currentTrip.vehicleId || ''}
                         onChange={e => setCurrentTrip({ ...currentTrip, vehicleId: e.target.value })}
                         required

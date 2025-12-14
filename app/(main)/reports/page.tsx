@@ -34,7 +34,9 @@ export default function ReportsPage() {
             const [allTrips, allVehicles] = await Promise.all([getTrips(), import('@/lib/services/vehicleService').then(m => m.getVehicles())]);
 
             const vMap: Record<string, string> = {};
-            allVehicles.forEach(v => vMap[v.id] = v.numberPlate);
+            allVehicles.forEach(v => {
+                vMap[v.id] = v.name ? `${v.name} (${v.numberPlate})` : v.numberPlate;
+            });
             setVehicleMap(vMap);
 
             const start = startOfDay(new Date(startDate));
