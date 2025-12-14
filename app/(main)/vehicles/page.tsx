@@ -10,6 +10,7 @@ import { Vehicle } from '@/types';
 import { addVehicle, updateVehicle, deleteVehicle } from '@/lib/services/vehicleService';
 import { useVehicles } from '@/lib/hooks/useVehicles';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { Timestamp } from 'firebase/firestore';
 
 export default function VehiclesPage() {
     const { vehicles, loading } = useVehicles();
@@ -129,20 +130,19 @@ export default function VehiclesPage() {
                         required
                         placeholder="TN 01 AB 1234"
                     />
-                    <Select
-                        label="Type"
-                        options={[
-                            { label: 'Sedan', value: 'Sedan' },
-                            { label: 'SUV', value: 'SUV' },
-                            { label: 'Tempo Traveller', value: 'Tempo Traveller' },
-                            { label: 'Bus', value: 'Bus' },
-                            { label: 'Mini Bus', value: 'Mini Bus' }
-                        ]}
-                        value={currentVehicle.type || ''}
-                        onChange={e => setCurrentVehicle({ ...currentVehicle, type: e.target.value })}
-                        required
-                    />
-                    <div style={{ display: 'flex', gap: '1rem' }}>
+                    <div className="form-grid">
+                        <Select
+                            label="Type"
+                            options={[
+                                { label: 'Sedan', value: 'Sedan' },
+                                { label: 'SUV', value: 'SUV' },
+                                { label: 'Tempo', value: 'Tempo Traveller' },
+                                { label: 'Mini Bus', value: 'Mini Bus' },
+                            ]}
+                            value={currentVehicle.type || 'Sedan'}
+                            onChange={e => setCurrentVehicle({ ...currentVehicle, type: e.target.value })}
+                            required
+                        />
                         <Input
                             label="Seats"
                             type="number"
@@ -150,19 +150,35 @@ export default function VehiclesPage() {
                             onChange={e => setCurrentVehicle({ ...currentVehicle, seats: Number(e.target.value) })}
                             required
                         />
-                        <Select
-                            label="Status"
-                            options={[
-                                { label: 'Active', value: 'active' },
-                                { label: 'Inactive', value: 'inactive' }
-                            ]}
-                            value={currentVehicle.status || 'active'}
-                            onChange={e => setCurrentVehicle({ ...currentVehicle, status: e.target.value as any })}
-                            required
+                    </div>
+
+                    <div className="form-grid">
+                        <Input
+                            label="Insurance Expiry"
+                            type="date"
+                            value={currentVehicle.insuranceExpiry && (currentVehicle.insuranceExpiry as any).toDate ? (currentVehicle.insuranceExpiry as any).toDate().toISOString().split('T')[0] : ''}
+                            onChange={e => setCurrentVehicle({ ...currentVehicle, insuranceExpiry: e.target.value ? Timestamp.fromDate(new Date(e.target.value)) : undefined })}
+                        />
+                        <Input
+                            label="Permit Expiry"
+                            type="date"
+                            value={currentVehicle.permitExpiry && (currentVehicle.permitExpiry as any).toDate ? (currentVehicle.permitExpiry as any).toDate().toISOString().split('T')[0] : ''}
+                            onChange={e => setCurrentVehicle({ ...currentVehicle, permitExpiry: e.target.value ? Timestamp.fromDate(new Date(e.target.value)) : undefined })}
                         />
                     </div>
 
-                    <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+                    <Select
+                        label="Status"
+                        options={[
+                            { label: 'Active', value: 'active' },
+                            { label: 'Inactive', value: 'inactive' },
+                        ]}
+                        value={currentVehicle.status || 'active'}
+                        onChange={e => setCurrentVehicle({ ...currentVehicle, status: e.target.value as any })}
+                        required
+                    />
+
+                    <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
                         <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} fullWidth>Cancel</Button>
                         <Button type="submit" fullWidth>{isEditing ? 'Update' : 'Create'}</Button>
                     </div>

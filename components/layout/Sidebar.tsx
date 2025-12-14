@@ -42,7 +42,7 @@ export default function Sidebar() {
                 >
                     <Menu size={24} />
                 </button>
-                <div className={styles.logo}>
+                <div className={styles.logo} style={{ flex: 1, justifyContent: 'center', marginBottom: 0 }}>
                     <Hexagon size={24} fill="var(--color-primary)" stroke="none" />
                     <span>TravelAdmin</span>
                 </div>

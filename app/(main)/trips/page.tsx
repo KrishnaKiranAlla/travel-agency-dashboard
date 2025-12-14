@@ -24,11 +24,22 @@ export default function TripsPage() {
     const [isEditing, setIsEditing] = useState(false);
 
     // Filters
+    const todayStr = new Date().toISOString().split('T')[0];
+    const [filterDate, setFilterDate] = useState(todayStr); // Default to today
     const [filterStatus, setFilterStatus] = useState('');
     const [filterVehicle, setFilterVehicle] = useState('');
 
-    // Filtered trips
+    // Filtered trips logic - simplified for MVP (client-side filtering of loaded trips)
+    // NOTE: In a real 'large scale' app, we would query Firestore by date. 
+    // Since we fetch "active" trips or "recent" trips via hook, we filter client side here.
     const filteredTrips = trips.filter(trip => {
+        // Date Filter
+        if (filterDate) {
+            const tDate = trip.tripDate?.toDate ? trip.tripDate.toDate() : new Date(trip.tripDate as any);
+            const tDateStr = format(tDate, 'yyyy-MM-dd');
+            if (tDateStr !== filterDate) return false;
+        }
+
         if (filterStatus && trip.status !== filterStatus) return false;
         if (filterVehicle && trip.vehicleId !== filterVehicle) return false;
         return true;
@@ -36,6 +47,52 @@ export default function TripsPage() {
 
     const calculateTotal = (base: number, extra: number) => {
         return (base || 0) + (extra || 0);
+    };
+
+    const getStatusBadge = (status: string) => {
+        const styles: Record<string, any> = {
+            scheduled: { bg: 'hsl(215, 90%, 95%)', color: 'hsl(215, 90%, 45%)' },
+            running: { bg: 'hsl(45, 90%, 95%)', color: 'hsl(45, 90%, 40%)' },
+            completed: { bg: 'hsl(150, 70%, 95%)', color: 'hsl(150, 70%, 35%)' },
+            cancelled: { bg: 'hsl(0, 70%, 95%)', color: 'hsl(0, 70%, 45%)' },
+        };
+        const s = styles[status] || styles.scheduled;
+        return (
+            <span style={{
+                padding: '0.25rem 0.6rem',
+                borderRadius: '6px',
+                backgroundColor: s.bg,
+                color: s.color,
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                textTransform: 'capitalize',
+                border: `1px solid ${s.color}20`
+            }}>
+                {status}
+            </span>
+        );
+    };
+
+    const getPaymentBadge = (status: string) => {
+        const styles: Record<string, any> = {
+            paid: { bg: 'hsl(150, 70%, 95%)', color: 'hsl(150, 70%, 35%)' },
+            partial: { bg: 'hsl(45, 90%, 95%)', color: 'hsl(45, 90%, 40%)' },
+            unpaid: { bg: 'hsl(0, 0%, 95%)', color: 'hsl(0, 0%, 45%)' },
+        };
+        const s = styles[status] || styles.unpaid;
+        return (
+            <span style={{
+                padding: '0.2rem 0.5rem',
+                borderRadius: '4px',
+                backgroundColor: s.bg,
+                color: s.color,
+                fontSize: '0.7rem',
+                fontWeight: 600,
+                textTransform: 'capitalize'
+            }}>
+                {status}
+            </span>
+        );
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -96,47 +153,34 @@ export default function TripsPage() {
 
     const columns = [
         {
-            header: 'Date & Time',
+            header: 'Time',
             accessor: (t: Trip) => {
                 try {
                     const date = t.tripDate?.toDate ? t.tripDate.toDate() : new Date(t.tripDate as any);
-                    return (
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <span style={{ fontWeight: 500 }}>{format(date, 'MMM dd, yyyy')}</span>
-                            <span className="text-muted text-sm">{format(date, 'hh:mm a')}</span>
-                        </div>
-                    );
-                } catch (e) { return 'Invalid Date'; }
+                    return format(date, 'hh:mm a');
+                } catch (e) { return '--:--'; }
             }
         },
         { header: 'Vehicle', accessor: (t: Trip) => getVehicleNumber(t.vehicleId) },
         {
             header: 'Route', accessor: (t: Trip) => (
-                <div style={{ display: 'flex', flexDirection: 'column', fontSize: '0.9rem' }}>
-                    <span>{t.pickupLocation}</span>
-                    <span className="text-muted" style={{ fontSize: '0.8rem' }}>↓</span>
-                    <span>{t.dropLocation}</span>
+                <div style={{ display: 'flex', flexDirection: 'column', fontSize: '0.85rem', lineHeight: 1.3 }}>
+                    <span style={{ fontWeight: 500 }}>{t.pickupLocation}</span>
+                    <span className="text-muted" style={{ fontSize: '0.75rem' }}>to {t.dropLocation}</span>
                 </div>
             )
         },
-        { header: 'Type', accessor: (t: Trip) => <span style={{ textTransform: 'capitalize' }}>{t.tripType}</span> },
-        { header: 'Amount', accessor: (t: Trip) => `₹${t.totalAmount}` },
         {
-            header: 'Status', accessor: (t: Trip) => (
-                <span style={{
-                    padding: '0.25rem 0.6rem',
-                    borderRadius: '99px',
-                    backgroundColor: t.status === 'completed' ? 'rgba(34, 197, 94, 0.1)' :
-                        t.status === 'cancelled' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(234, 179, 8, 0.1)',
-                    color: t.status === 'completed' ? 'var(--color-success)' :
-                        t.status === 'cancelled' ? 'var(--color-danger)' : 'var(--color-warning)',
-                    fontSize: '0.75rem',
-                    fontWeight: 600,
-                    textTransform: 'capitalize'
-                }}>
-                    {t.status}
-                </span>
+            header: 'Amount / Pay',
+            accessor: (t: Trip) => (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                    <span style={{ fontWeight: 600 }}>₹{t.totalAmount}</span>
+                    <div>{getPaymentBadge(t.paymentStatus)}</div>
+                </div>
             )
+        },
+        {
+            header: 'Status', accessor: (t: Trip) => getStatusBadge(t.status)
         },
     ];
 
@@ -149,8 +193,16 @@ export default function TripsPage() {
                 </Button>
             </div>
 
-            <div className="flex gap-4 mb-6 flex-wrap">
+            <div className="filters-container">
+                <Input
+                    type="date"
+                    value={filterDate}
+                    onChange={(e) => setFilterDate(e.target.value)}
+                    label="Date"
+                />
+
                 <Select
+                    label="Vehicle"
                     value={filterVehicle}
                     onChange={(e) => setFilterVehicle(e.target.value)}
                     options={[
@@ -160,10 +212,10 @@ export default function TripsPage() {
                             value: v.id
                         }))
                     ]}
-                    style={{ minWidth: '200px' }}
                 />
 
                 <Select
+                    label="Status"
                     value={filterStatus}
                     onChange={(e) => setFilterStatus(e.target.value)}
                     options={[
@@ -173,7 +225,6 @@ export default function TripsPage() {
                         { label: 'Completed', value: 'completed' },
                         { label: 'Cancelled', value: 'cancelled' },
                     ]}
-                    style={{ minWidth: '200px' }}
                 />
             </div>
 
@@ -210,14 +261,14 @@ export default function TripsPage() {
                     />
 
                     <Input
-                        label="Trip Date"
+                        label="Trip Date & Time"
                         type="datetime-local"
                         value={currentTrip.tripDate || ''}
                         onChange={e => setCurrentTrip({ ...currentTrip, tripDate: e.target.value })}
                         required
                     />
 
-                    <div style={{ display: 'flex', gap: '1rem' }}>
+                    <div className="form-grid">
                         <Input
                             label="Pickup Location"
                             value={currentTrip.pickupLocation || ''}
@@ -232,40 +283,41 @@ export default function TripsPage() {
                         />
                     </div>
 
-                    <Select
-                        label="Trip Type"
-                        options={[
-                            { label: 'Local', value: 'local' },
-                            { label: 'Outstation', value: 'outstation' },
-                            { label: 'Airport', value: 'airport' }
-                        ]}
-                        value={currentTrip.tripType || ''}
-                        onChange={e => setCurrentTrip({ ...currentTrip, tripType: e.target.value as any })}
-                        required
-                    />
-
-                    <div style={{ display: 'flex', gap: '1rem' }}>
+                    <div className="form-grid">
+                        <Select
+                            label="Trip Type"
+                            options={[
+                                { label: 'Local', value: 'local' },
+                                { label: 'Outstation', value: 'outstation' },
+                                { label: 'Airport', value: 'airport' }
+                            ]}
+                            value={currentTrip.tripType || ''}
+                            onChange={e => setCurrentTrip({ ...currentTrip, tripType: e.target.value as any })}
+                            required
+                        />
                         <Input
-                            label="Base Rate"
+                            label="Base Rate (₹)"
                             type="number"
                             value={currentTrip.baseRate || ''}
                             onChange={e => setCurrentTrip({ ...currentTrip, baseRate: Number(e.target.value) })}
                             required
                         />
+                    </div>
+
+                    <div className="form-grid">
                         <Input
-                            label="Extra Charges"
+                            label="Extra Charges (₹)"
                             type="number"
                             value={currentTrip.extraCharges || 0}
                             onChange={e => setCurrentTrip({ ...currentTrip, extraCharges: Number(e.target.value) })}
                         />
+                        <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-input)', borderRadius: 'var(--radius)', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                            <span className="text-secondary text-sm">Total Amount</span>
+                            <span className="font-bold" style={{ fontSize: '1.1rem', color: 'var(--color-primary)' }}>₹{calculateTotal(Number(currentTrip.baseRate), Number(currentTrip.extraCharges))}</span>
+                        </div>
                     </div>
 
-                    <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-input)', borderRadius: 'var(--radius)', marginTop: '0.5rem' }}>
-                        <span className="text-secondary text-sm">Total Amount: </span>
-                        <span className="font-bold">₹{calculateTotal(Number(currentTrip.baseRate), Number(currentTrip.extraCharges))}</span>
-                    </div>
-
-                    <div style={{ display: 'flex', gap: '1rem' }}>
+                    <div className="form-grid">
                         <Select
                             label="Status"
                             options={[
@@ -291,7 +343,7 @@ export default function TripsPage() {
                         />
                     </div>
 
-                    <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+                    <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
                         <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} fullWidth>Cancel</Button>
                         <Button type="submit" fullWidth>{isEditing ? 'Update' : 'Create'}</Button>
                     </div>

@@ -87,25 +87,21 @@ export default function ReportsPage() {
             </div>
 
             <Card style={{ marginBottom: '2rem' }}>
-                <form onSubmit={generateReport} className="flex flex-wrap gap-4 items-end">
-                    <div style={{ minWidth: '200px', flex: 1 }}>
-                        <Input
-                            label="Start Date"
-                            type="date"
-                            value={startDate}
-                            onChange={e => setStartDate(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div style={{ minWidth: '200px', flex: 1 }}>
-                        <Input
-                            label="End Date"
-                            type="date"
-                            value={endDate}
-                            onChange={e => setEndDate(e.target.value)}
-                            required
-                        />
-                    </div>
+                <form onSubmit={generateReport} className="filters-container items-end">
+                    <Input
+                        label="Start Date"
+                        type="date"
+                        value={startDate}
+                        onChange={e => setStartDate(e.target.value)}
+                        required
+                    />
+                    <Input
+                        label="End Date"
+                        type="date"
+                        value={endDate}
+                        onChange={e => setEndDate(e.target.value)}
+                        required
+                    />
                     <Button type="submit" isLoading={loading}>
                         <BarChart3 size={18} /> Generate
                     </Button>
