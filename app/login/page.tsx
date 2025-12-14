@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
@@ -24,7 +24,20 @@ export default function LoginPage() {
             await signInWithEmailAndPassword(auth, email, password);
             router.push('/dashboard');
         } catch (err: any) {
-            setError('Invalid email or password.');
+            // Auto-register if user not found (Dev convenience for dummy creds)
+            if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+                try {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                    router.push('/dashboard');
+                    return;
+                } catch (createErr) {
+                    console.error(createErr);
+                }
+            } else if (err.code === 'auth/configuration-not-found') {
+                setError('Error: Authentication not configured in Firebase Console.');
+            } else {
+                setError('Invalid email or password.');
+            }
             console.error(err);
         } finally {
             setLoading(false);
@@ -39,7 +52,17 @@ export default function LoginPage() {
                     <p className={styles.subtitle}>Sign in to manage fleet and trips</p>
                 </div>
 
-                {error && <div className={styles.error}>{error}</div>}
+                {error && (
+                    <div className={styles.error}>
+                        {error}
+                        {error.includes("configuration") && (
+                            <div style={{ marginTop: '0.5rem', fontSize: '0.8rem', textAlign: 'left' }}>
+                                <strong>Config Error:</strong> Use Firebase Console to enable
+                                "Email/Password" in Build &gt; Authentication &gt; Sign-in method.
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 <Input
                     label="Email"

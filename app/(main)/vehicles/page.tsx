@@ -1,37 +1,21 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Table } from '@/components/ui/Table';
 import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Vehicle } from '@/types';
-import { getVehicles, addVehicle, updateVehicle, deleteVehicle } from '@/lib/services/vehicleService';
+import { addVehicle, updateVehicle, deleteVehicle } from '@/lib/services/vehicleService';
+import { useVehicles } from '@/lib/hooks/useVehicles';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 
 export default function VehiclesPage() {
-    const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { vehicles, loading } = useVehicles();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentVehicle, setCurrentVehicle] = useState<Partial<Vehicle>>({});
     const [isEditing, setIsEditing] = useState(false);
-
-    const fetchVehicles = async () => {
-        setLoading(true);
-        try {
-            const data = await getVehicles();
-            setVehicles(data);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchVehicles();
-    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -47,7 +31,6 @@ export default function VehiclesPage() {
                 await addVehicle(vehicleData);
             }
             setIsModalOpen(false);
-            fetchVehicles();
         } catch (error) {
             console.error(error);
         }
@@ -62,7 +45,6 @@ export default function VehiclesPage() {
     const handleDelete = async (id: string) => {
         if (confirm('Are you sure you want to delete this vehicle?')) {
             await deleteVehicle(id);
-            fetchVehicles();
         }
     };
 

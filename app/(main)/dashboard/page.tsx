@@ -1,78 +1,63 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Table } from '@/components/ui/Table';
-import { getVehicles } from '@/lib/services/vehicleService';
-import { getTrips } from '@/lib/services/tripService';
+import { useVehicles } from '@/lib/hooks/useVehicles';
+import { useTrips } from '@/lib/hooks/useTrips';
 import { Trip, Vehicle } from '@/types';
 import { format, isSameDay, isAfter, addDays, isBefore } from 'date-fns';
 import { Car, CheckCircle, Map, DollarSign, AlertTriangle, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 
 export default function DashboardPage() {
-    const [stats, setStats] = useState({
-        totalVehicles: 0,
-        activeVehicles: 0,
-        todayTrips: 0,
-        todayRevenue: 0,
-    });
-    const [todayTripsList, setTodayTripsList] = useState<Trip[]>([]);
-    const [expiringVehicles, setExpiringVehicles] = useState<{ v: Vehicle, type: string, date: Date }[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { vehicles, loading: vehiclesLoading } = useVehicles();
+    const { trips, loading: tripsLoading } = useTrips();
 
-    useEffect(() => {
-        async function loadDashboard() {
-            try {
-                const [vehicles, trips] = await Promise.all([getVehicles(), getTrips()]);
+    const stats = useMemo(() => {
+        const activeVehicles = vehicles.filter(v => v.status === 'active').length;
+        const today = new Date();
 
-                // Stats
-                const activeVehicles = vehicles.filter(v => v.status === 'active').length;
+        // Safety check: tripDate can be null/undefined in partial updates
+        const todayTrips = trips.filter(t => {
+            if (!t.tripDate) return false;
+            const d = t.tripDate instanceof Object && 'toDate' in t.tripDate ? (t.tripDate as any).toDate() : new Date(t.tripDate as any);
+            return isSameDay(d, today);
+        });
 
-                const today = new Date();
-                const todayTrips = trips.filter(t => {
-                    const d = t.tripDate?.toDate ? t.tripDate.toDate() : new Date(t.tripDate as any);
-                    return isSameDay(d, today);
-                });
+        const revenue = todayTrips
+            .filter(t => t.status === 'completed')
+            .reduce((sum, t) => sum + (t.totalAmount || 0), 0);
 
-                const revenue = todayTrips
-                    .filter(t => t.status === 'completed') // Revenue only from completed
-                    .reduce((sum, t) => sum + (t.totalAmount || 0), 0);
+        return {
+            totalVehicles: vehicles.length,
+            activeVehicles,
+            todayTrips: todayTrips.length,
+            todayRevenue: revenue,
+            todayTripsList: todayTrips
+        };
+    }, [vehicles, trips]);
 
-                setStats({
-                    totalVehicles: vehicles.length,
-                    activeVehicles,
-                    todayTrips: todayTrips.length,
-                    todayRevenue: revenue
-                });
+    const expiringVehicles = useMemo(() => {
+        const today = new Date();
+        const expiryThreshold = addDays(today, 30);
+        const expiring: { v: Vehicle, type: string, date: Date }[] = [];
 
-                setTodayTripsList(todayTrips);
+        vehicles.forEach(v => {
+            const insurance = v.insuranceExpiry && 'toDate' in v.insuranceExpiry ? (v.insuranceExpiry as any).toDate() : null;
+            const permit = v.permitExpiry && 'toDate' in v.permitExpiry ? (v.permitExpiry as any).toDate() : null;
 
-                // Expiries (next 30 days)
-                const expiryThreshold = addDays(today, 30);
-                const expiring: { v: Vehicle, type: string, date: Date }[] = [];
-
-                vehicles.forEach(v => {
-                    const insurance = v.insuranceExpiry?.toDate ? v.insuranceExpiry.toDate() : null;
-                    const permit = v.permitExpiry?.toDate ? v.permitExpiry.toDate() : null;
-
-                    if (insurance && isAfter(insurance, today) && isBefore(insurance, expiryThreshold)) {
-                        expiring.push({ v, type: 'Insurance', date: insurance });
-                    }
-                    if (permit && isAfter(permit, today) && isBefore(permit, expiryThreshold)) {
-                        expiring.push({ v, type: 'Permit', date: permit });
-                    }
-                });
-                setExpiringVehicles(expiring);
-
-            } catch (e) {
-                console.error(e);
-            } finally {
-                setLoading(false);
+            if (insurance && isAfter(insurance, today) && isBefore(insurance, expiryThreshold)) {
+                expiring.push({ v, type: 'Insurance', date: insurance });
             }
-        }
-        loadDashboard();
-    }, []);
+            if (permit && isAfter(permit, today) && isBefore(permit, expiryThreshold)) {
+                expiring.push({ v, type: 'Permit', date: permit });
+            }
+        });
+        return expiring;
+    }, [vehicles]);
+
+    const loading = vehiclesLoading || tripsLoading;
 
     const statCards = [
         { label: 'Total Vehicles', value: stats.totalVehicles, icon: Car, color: 'var(--color-primary)' },
@@ -112,10 +97,10 @@ export default function DashboardPage() {
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>
                 <Card title="Today's Trips" className="trips-card">
                     <Table
-                        data={todayTripsList}
+                        data={stats.todayTripsList}
                         columns={tripColumns}
                     />
-                    {todayTripsList.length === 0 && !loading && (
+                    {stats.todayTripsList.length === 0 && !loading && (
                         <div style={{ textAlign: 'center', padding: '1rem' }}>No trips scheduled for today.</div>
                     )}
                     <div style={{ marginTop: '1rem', textAlign: 'right' }}>

@@ -7,16 +7,18 @@ import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Trip, Vehicle } from '@/types';
-import { getTrips, addTrip, updateTrip, deleteTrip } from '@/lib/services/tripService';
-import { getVehicles } from '@/lib/services/vehicleService';
+import { addTrip, updateTrip, deleteTrip } from '@/lib/services/tripService';
+import { useVehicles } from '@/lib/hooks/useVehicles';
+import { useTrips } from '@/lib/hooks/useTrips';
 import { Plus, Pencil, Trash2, Filter } from 'lucide-react';
 import { Timestamp } from 'firebase/firestore';
 import { format } from 'date-fns';
 
 export default function TripsPage() {
-    const [trips, setTrips] = useState<Trip[]>([]);
-    const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { trips, loading: tripsLoading } = useTrips();
+    const { vehicles, loading: vehiclesLoading } = useVehicles();
+    const loading = tripsLoading || vehiclesLoading;
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentTrip, setCurrentTrip] = useState<any>({});
     const [isEditing, setIsEditing] = useState(false);
@@ -24,23 +26,6 @@ export default function TripsPage() {
     // Filters
     const [filterStatus, setFilterStatus] = useState('');
     const [filterVehicle, setFilterVehicle] = useState('');
-
-    const fetchData = async () => {
-        setLoading(true);
-        try {
-            const [tripsData, vehiclesData] = await Promise.all([getTrips(), getVehicles()]);
-            setTrips(tripsData);
-            setVehicles(vehiclesData);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchData();
-    }, []);
 
     // Filtered trips
     const filteredTrips = trips.filter(trip => {
@@ -73,7 +58,6 @@ export default function TripsPage() {
                 await addTrip(tripData);
             }
             setIsModalOpen(false);
-            fetchData(); // refresh
         } catch (error) {
             console.error(error);
         }
@@ -91,7 +75,6 @@ export default function TripsPage() {
     const handleDelete = async (id: string) => {
         if (confirm('Are you sure you want to delete this trip?')) {
             await deleteTrip(id);
-            fetchData();
         }
     };
 
