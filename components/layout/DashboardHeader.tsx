@@ -41,7 +41,7 @@ export default function DashboardHeader() {
                             className={`${styles.navItem} ${isActive ? styles.active : ''}`}
                             title={item.name}
                         >
-                            <Icon size={20} />
+                            <Icon size={20} strokeWidth={2} className="icon" />
                             <span className={styles.label}>{item.name}</span>
                         </Link>
                     );
@@ -52,7 +52,7 @@ export default function DashboardHeader() {
                 className={styles.logoutBtn}
                 title="Logout"
             >
-                <LogOut size={18} />
+                <LogOut size={18} strokeWidth={2} className="icon" />
                 <span className={styles.label}>Logout</span>
             </button>
         </div>

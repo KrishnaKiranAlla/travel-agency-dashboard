@@ -7,6 +7,7 @@ import { DateRangeFilter } from '@/components/ui/DateRangeFilter';
 import { useTrips } from '@/lib/hooks/useTrips';
 import { Trip } from '@/types';
 import { format, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
+import styles from './page.module.css';
 import { TrendingUp, BarChart3, DollarSign, Wallet } from 'lucide-react';
 
 type FilterType = 'date' | 'week' | 'month';
@@ -150,30 +151,35 @@ export default function RevenuePage() {
             label: 'Total Trips',
             value: stats.totalTrips,
             color: 'hsl(220, 90%, 56%)',
+            bgClass: styles.blue,
             icon: TrendingUp
         },
         {
             label: 'Completed Trips',
             value: stats.completedTrips,
             color: 'hsl(150, 70%, 40%)',
+            bgClass: styles.green,
             icon: BarChart3
         },
         {
             label: 'Total Revenue',
             value: `₹${stats.totalRevenue}`,
             color: 'hsl(220, 90%, 56%)',
+            bgClass: styles.blue,
             icon: DollarSign
         },
         {
             label: 'Advance Received',
             value: `₹${stats.totalAdvance}`,
             color: 'hsl(45, 90%, 50%)',
+            bgClass: styles.yellow,
             icon: Wallet
         },
         {
             label: 'Remaining to Collect',
             value: `₹${stats.remainingRevenue}`,
             color: stats.remainingRevenue > 0 ? 'hsl(0, 70%, 55%)' : 'hsl(150, 70%, 40%)',
+            bgClass: stats.remainingRevenue > 0 ? styles.red : styles.green,
             icon: DollarSign
         }
     ];
@@ -188,14 +194,14 @@ export default function RevenuePage() {
                 } catch (e) { return '--'; }
             }
         },
-        { header: 'Type', accessor: (t: Trip) => <span style={{ textTransform: 'capitalize' }}>{t.tripType}</span> },
+        { header: 'Type', accessor: (t: Trip) => <span className={styles.tripTypeSpan}>{t.tripType}</span> },
         { header: 'Route', accessor: (t: Trip) => `${t.pickupLocation} → ${t.dropLocation}` },
         {
             header: 'Amount',
             accessor: (t: Trip) => (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                    <span style={{ fontWeight: 600 }}>₹{t.totalAmount}</span>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                <div className={styles.tableAmountColumn}>
+                    <span className={styles.amountValue}>₹{t.totalAmount}</span>
+                    <span className={styles.advanceValue}>
                         Advance: ₹{t.advanceAmount || 0}
                     </span>
                 </div>
@@ -203,33 +209,27 @@ export default function RevenuePage() {
         },
         {
             header: 'Balance',
-            accessor: (t: Trip) => (
-                <span style={{ color: t.totalAmount - (t.advanceAmount || 0) <= 0 ? 'var(--color-success)' : 'var(--color-danger)', fontWeight: 600 }}>
-                    ₹{Math.max(0, t.totalAmount - (t.advanceAmount || 0))}
-                </span>
-            )
+            accessor: (t: Trip) => {
+                const balance = t.totalAmount - (t.advanceAmount || 0);
+                return (
+                    <span className={`${styles.balanceColumn} ${balance <= 0 ? styles.balanceZero : styles.balancePositive}`}>
+                        ₹{Math.max(0, balance)}
+                    </span>
+                );
+            }
         },
         {
             header: 'Status',
             accessor: (t: Trip) => {
-                const statusStyles: Record<string, any> = {
-                    completed: { bg: 'hsl(150, 70%, 95%)', color: 'hsl(150, 70%, 35%)' },
-                    running: { bg: 'hsl(45, 90%, 95%)', color: 'hsl(45, 90%, 40%)' },
-                    scheduled: { bg: 'hsl(215, 90%, 95%)', color: 'hsl(215, 90%, 45%)' },
-                    cancelled: { bg: 'hsl(0, 70%, 95%)', color: 'hsl(0, 70%, 45%)' },
+                const statusClassMap: Record<string, string> = {
+                    completed: styles.statusCompleted,
+                    running: styles.statusRunning,
+                    scheduled: styles.statusScheduled,
+                    cancelled: styles.statusCancelled,
                 };
-                const s = statusStyles[t.status] || statusStyles.scheduled;
+                const statusClass = statusClassMap[t.status] || styles.statusScheduled;
                 return (
-                    <span style={{
-                        padding: '0.25rem 0.6rem',
-                        borderRadius: '6px',
-                        backgroundColor: s.bg,
-                        color: s.color,
-                        fontSize: '0.75rem',
-                        fontWeight: 600,
-                        textTransform: 'capitalize',
-                        border: `1px solid ${s.color}20`
-                    }}>
+                    <span className={`${styles.statusBadge} ${statusClass}`}>
                         {t.status}
                     </span>
                 );
@@ -243,74 +243,46 @@ export default function RevenuePage() {
 
     return (
         <div>
-            <div className="page-header">
-                <h1 className="text-xl font-bold">Revenue Report</h1>
+            <div className={styles.pageHeader}>
+                <h1>Revenue Report</h1>
             </div>
 
-            <DateRangeFilter
-                filterType={filterType}
-                selectedDate={selectedDate}
-                onFilterTypeChange={(newType) => {
-                    setFilterType(newType);
-                    setSelectedDate(getDefaultDate(newType));
-                }}
-                onDateChange={setSelectedDate}
-            />
-
-            <div style={{ marginBottom: '1.5rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                Showing data for: <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>{stats.dateRange}</span>
+            <div className={styles.dateRangeWrapper}>
+                <DateRangeFilter
+                    filterType={filterType}
+                    selectedDate={selectedDate}
+                    onFilterTypeChange={(newType) => {
+                        setFilterType(newType);
+                        setSelectedDate(getDefaultDate(newType));
+                    }}
+                    onDateChange={setSelectedDate}
+                />
             </div>
 
-            <div className="stats-grid">
-                {statCards.map((stat, i) => {
-                    const IconComponent = stat.icon;
-                    return (
-                        <Card key={i} className="stat-card">
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', gap: '0.75rem' }}>
-                                <span className="text-muted text-sm" style={{ fontWeight: 500, flex: 1, minWidth: 0 }}>{stat.label}</span>
-                                <div style={{ 
-                                    padding: '0.6rem', 
-                                    borderRadius: '50%', 
-                                    backgroundColor: `${stat.color}20`, 
-                                    display: 'inline-flex', 
-                                    alignItems: 'center', 
-                                    justifyContent: 'center', 
-                                    flexShrink: 0,
-                                    width: '40px',
-                                    height: '40px',
-                                    minWidth: '40px',
-                                    minHeight: '40px'
-                                }}>
-                                    <div style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        width: '100%',
-                                        height: '100%'
-                                    }}>
-                                        <IconComponent 
-                                            size={22} 
-                                            color={stat.color} 
-                                            strokeWidth={2}
-                                            style={{ 
-                                                display: 'block',
-                                                width: '22px',
-                                                height: '22px'
-                                            }}
-                                        />
+            <div className={styles.dateLabel}>
+                Showing data for: <span className={styles.dateLabelValue}>{stats.dateRange}</span>
+            </div>
+
+            <div className={styles.statsGrid}>
+                {statCards.map((stat, i) => (
+                    <Card key={i} className={styles.statCard}>
+                        <div className={styles.statHeader}>
+                                        <span className={styles.statLabel}>{stat.label}</span>
+                                        <div className={`${styles.iconContainer} ${stat.bgClass}`}>
+                                            <div className={styles.iconWrapper}>
+                                                <stat.icon size={20} strokeWidth={2} className="icon" />
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div className="font-bold" style={{ fontSize: '1.25rem', color: stat.color }}>
-                                {stat.value}
-                            </div>
-                        </Card>
-                    );
-                })}
+                                    <div className={styles.statValue} style={{ color: stat.color }}>
+                                        {stat.value}
+                                    </div>
+                    </Card>
+                ))}
             </div>
 
-            <div style={{ marginTop: '2rem' }}>
-                <h2 className="text-lg font-bold" style={{ marginBottom: '1rem' }}>Trip Details</h2>
+            <div className={styles.tripDetailsSection}>
+                <h2 className={styles.tripDetailsTitle}>Trip Details</h2>
                 <Table
                     data={filteredTrips}
                     columns={columns}

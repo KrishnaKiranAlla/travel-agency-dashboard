@@ -241,7 +241,7 @@ textarea {
 /* SVG Icon Rendering - Fix for mobile/iOS */
 svg {
   overflow: visible;
-  fill: currentColor;
+  /* fill: currentColor; */
   stroke: currentColor;
 }
 
@@ -258,4 +258,17 @@ svg[stroke-linecap="round"] {
     -webkit-filter: drop-shadow(0 0 0px transparent);
     filter: drop-shadow(0 0 0px transparent);
   }
+}
+
+/* Global icon helper */
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.icon svg {
+  width: 20px;
+  height: 20px;
 }

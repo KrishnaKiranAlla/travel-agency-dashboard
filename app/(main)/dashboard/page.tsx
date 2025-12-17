@@ -7,8 +7,8 @@ import { useVehicles } from '@/lib/hooks/useVehicles';
 import { useTrips } from '@/lib/hooks/useTrips';
 import { Trip, Vehicle } from '@/types';
 import { format, isSameDay, isAfter, addDays, isBefore } from 'date-fns';
-import { Car, CheckCircle, Map, DollarSign, AlertTriangle, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
+import { Car, CheckCircle, Map, DollarSign } from 'lucide-react';
 
 export default function DashboardPage() {
     const { vehicles, loading: vehiclesLoading } = useVehicles();
@@ -60,10 +60,10 @@ export default function DashboardPage() {
     const loading = vehiclesLoading || tripsLoading;
 
     const statCards = [
-        { label: 'Total Vehicles', value: stats.totalVehicles, icon: Car, color: 'var(--color-primary)' },
-        { label: 'Active Vehicles', value: stats.activeVehicles, icon: CheckCircle, color: 'var(--color-success)' },
-        { label: "Today's Trips", value: stats.todayTrips, icon: Map, color: 'var(--color-warning)' },
-        { label: "Today's Revenue", value: `₹${stats.todayRevenue}`, icon: DollarSign, color: '#8b5cf6' },
+        { label: 'Total Vehicles', value: stats.totalVehicles, color: 'var(--color-primary)', icon: Car },
+        { label: 'Active Vehicles', value: stats.activeVehicles, color: 'var(--color-success)', icon: CheckCircle },
+        { label: "Today's Trips", value: stats.todayTrips, color: 'var(--color-warning)', icon: Map },
+        { label: "Today's Revenue", value: `₹${stats.todayRevenue}`, color: '#8b5cf6', icon: DollarSign },
     ];
 
     const tripColumns = [
@@ -86,7 +86,7 @@ export default function DashboardPage() {
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                             <span className="text-muted text-sm" style={{ fontWeight: 500 }}>{stat.label}</span>
                             <div style={{ padding: '0.5rem', borderRadius: '50%', backgroundColor: `${stat.color}20` }}>
-                                <stat.icon size={20} color={stat.color} />
+                                <stat.icon size={20} strokeWidth={2} className="icon" />
                             </div>
                         </div>
                         <div style={{ fontSize: '1.75rem', fontWeight: 700 }}>
@@ -115,8 +115,7 @@ export default function DashboardPage() {
                 <Card title="Upcoming Expiries">
                     {expiringVehicles.length === 0 && (
                         <div className="empty-state">
-                            <CheckCircle size={32} />
-                            <p>No upcoming expiries</p>
+                            <p>✓ No upcoming expiries</p>
                         </div>
                     )}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -130,7 +129,7 @@ export default function DashboardPage() {
                                 backgroundColor: 'hsl(0, 70%, 98%)',
                                 borderLeft: '3px solid var(--color-danger)'
                             }}>
-                                <AlertTriangle size={20} color="var(--color-danger)" />
+                                <span style={{ color: 'var(--color-danger)', fontWeight: 700 }}>⚠</span>
                                 <div>
                                     <div style={{ fontWeight: 500 }}>{item.v.numberPlate}</div>
                                     <div className="text-muted text-sm">{item.type} Expires: {format(item.date, 'dd MMM')}</div>

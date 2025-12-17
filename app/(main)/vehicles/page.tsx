@@ -9,8 +9,8 @@ import { Select } from '@/components/ui/Select';
 import { Vehicle } from '@/types';
 import { addVehicle, updateVehicle, deleteVehicle } from '@/lib/services/vehicleService';
 import { useVehicles } from '@/lib/hooks/useVehicles';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { Timestamp } from 'firebase/firestore';
+import { Plus, Pencil, Trash2 } from 'lucide-react';
 
 export default function VehiclesPage() {
     const { vehicles, loading } = useVehicles();
@@ -91,7 +91,7 @@ export default function VehiclesPage() {
             <div className="page-header">
                 <h1 className="text-xl font-bold">Vehicles</h1>
                 <Button onClick={openAddModal}>
-                    <Plus size={18} /> Add Vehicle
+                    <Plus size={16} strokeWidth={2} className="icon" /> Add Vehicle
                 </Button>
             </div>
 
@@ -101,10 +101,10 @@ export default function VehiclesPage() {
                 actions={(v) => (
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
                         <Button variant="outline" size="sm" onClick={() => handleEdit(v)} title="Edit">
-                            <Pencil size={14} />
+                            <Pencil size={14} strokeWidth={2} className="icon" />
                         </Button>
                         <Button variant="outline" size="sm" onClick={() => handleDelete(v.id)} style={{ color: 'var(--color-danger)', borderColor: 'rgba(239, 68, 68, 0.3)' }} title="Delete">
-                            <Trash2 size={14} />
+                            <Trash2 size={14} strokeWidth={2} className="icon" />
                         </Button>
                     </div>
                 )}

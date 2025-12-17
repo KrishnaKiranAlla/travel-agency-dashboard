@@ -41,7 +41,7 @@ export default function Sidebar() {
                     onClick={() => setIsMobileOpen(true)}
                     aria-label="Open menu"
                 >
-                    <Menu size={24} />
+                    <Menu size={24} strokeWidth={2} className="icon" />
                 </button>
                 <div className={styles.logo} style={{ flex: 1, justifyContent: 'center', marginBottom: 0 }}>
                     <Hexagon size={24} fill="var(--color-primary)" stroke="none" />
@@ -68,7 +68,7 @@ export default function Sidebar() {
                         onClick={closeMobile}
                         aria-label="Close menu"
                     >
-                        <X size={20} />
+                        <X size={20} strokeWidth={2} className="icon" />
                     </button>
                 </div>
 
@@ -82,7 +82,7 @@ export default function Sidebar() {
                                 className={`${styles.link} ${isActive ? styles.active : ''}`}
                                 onClick={closeMobile}
                             >
-                                <item.icon size={20} />
+                                <item.icon size={20} strokeWidth={2} className="icon" />
                                 {item.name}
                             </Link>
                         );
@@ -91,7 +91,7 @@ export default function Sidebar() {
 
                 <div className={styles.footer}>
                     <button onClick={handleLogout} className={styles.logout}>
-                        <LogOut size={20} />
+                        <LogOut size={20} strokeWidth={2} className="icon" />
                         Logout
                     </button>
                 </div>

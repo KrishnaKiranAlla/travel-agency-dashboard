@@ -29,7 +29,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
                 <div className={styles.header}>
                     <h2 className={styles.title}>{title}</h2>
                     <button onClick={onClose} className={styles.close}>
-                        <X size={20} />
+                        <X size={20} strokeWidth={2} className="icon" />
                     </button>
                 </div>
                 <div className={styles.content}>

@@ -87,7 +87,7 @@ export default function ReportsPage() {
             </div>
 
             <Card style={{ marginBottom: '2rem' }}>
-                <form onSubmit={generateReport} className="filters-container items-end">
+                        <form onSubmit={generateReport} className="filters-container items-end">
                     <Input
                         label="Start Date"
                         type="date"
@@ -103,7 +103,7 @@ export default function ReportsPage() {
                         required
                     />
                     <Button type="submit" isLoading={loading}>
-                        <BarChart3 size={18} /> Generate
+                        <BarChart3 size={18} strokeWidth={2} className="icon" /> Generate
                     </Button>
                 </form>
             </Card>

@@ -10,9 +10,9 @@ import { Trip, Vehicle } from '@/types';
 import { addTrip, updateTrip, deleteTrip } from '@/lib/services/tripService';
 import { useVehicles } from '@/lib/hooks/useVehicles';
 import { useTrips } from '@/lib/hooks/useTrips';
-import { Plus, Pencil, Trash2, Filter } from 'lucide-react';
 import { Timestamp } from 'firebase/firestore';
 import { format } from 'date-fns';
+import { Plus, Pencil, Trash2 } from 'lucide-react';
 
 export default function TripsPage() {
     const { trips, loading: tripsLoading } = useTrips();
@@ -190,7 +190,7 @@ export default function TripsPage() {
             <div className="page-header">
                 <h1 className="text-xl font-bold">Trips</h1>
                 <Button onClick={openAddModal}>
-                    <Plus size={18} /> Add Trip
+                    <Plus size={16} strokeWidth={2} className="icon" /> Add Trip
                 </Button>
             </div>
 
@@ -234,11 +234,11 @@ export default function TripsPage() {
                 columns={columns}
                 actions={(t) => (
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
-                        <Button variant="outline" size="sm" onClick={() => handleEdit(t)}>
-                            <Pencil size={14} />
+                        <Button variant="outline" size="sm" onClick={() => handleEdit(t)} title="Edit">
+                            <Pencil size={14} strokeWidth={2} className="icon" />
                         </Button>
-                        <Button variant="outline" size="sm" onClick={() => handleDelete(t.id)} style={{ color: 'var(--color-danger)', borderColor: 'rgba(239, 68, 68, 0.3)' }}>
-                            <Trash2 size={14} />
+                        <Button variant="outline" size="sm" onClick={() => handleDelete(t.id)} style={{ color: 'var(--color-danger)', borderColor: 'rgba(239, 68, 68, 0.3)' }} title="Delete">
+                            <Trash2 size={14} strokeWidth={2} className="icon" />
                         </Button>
                     </div>
                 )}
