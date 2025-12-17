@@ -3,22 +3,61 @@
 import { useState, useMemo } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Table } from '@/components/ui/Table';
-import { Input } from '@/components/ui/Input';
-import { Select } from '@/components/ui/Select';
+import { DateRangeFilter } from '@/components/ui/DateRangeFilter';
 import { useTrips } from '@/lib/hooks/useTrips';
 import { Trip } from '@/types';
 import { format, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
-import { DollarSign, TrendingUp } from 'lucide-react';
+import { TrendingUp, BarChart3, DollarSign, Wallet } from 'lucide-react';
 
 type FilterType = 'date' | 'week' | 'month';
 
 export default function RevenuePage() {
     const { trips, loading } = useTrips();
     const [filterType, setFilterType] = useState<FilterType>('date');
-    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+    
+    // Helper to get default date in correct format
+    const getDefaultDate = (type: FilterType) => {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const date = String(today.getDate()).padStart(2, '0');
+        
+        if (type === 'month') {
+            return `${year}-${month}`;
+        } else if (type === 'week') {
+            // Calculate ISO week number
+            const firstDay = new Date(year, 0, 1);
+            const days = Math.floor((today.getTime() - firstDay.getTime()) / (24 * 60 * 60 * 1000));
+            const week = String(Math.ceil((days + firstDay.getDay() + 1) / 7)).padStart(2, '0');
+            return `${year}-W${week}`;
+        }
+        return `${year}-${month}-${date}`;
+    };
+
+    const [selectedDate, setSelectedDate] = useState(getDefaultDate('date'));
 
     const getDateRange = (type: FilterType, dateStr: string) => {
-        const date = new Date(dateStr);
+        let date: Date;
+
+        if (type === 'week') {
+            // Parse ISO week format (YYYY-Www) to Date
+            // Example: "2025-W51" means year 2025, week 51
+            const [year, week] = dateStr.split('-W').map(Number);
+            const simple = new Date(year, 0, 1 + (week - 1) * 7);
+            const dayOfWeek = simple.getDay();
+            const ISOweekStart = simple;
+            if (dayOfWeek <= 4)
+                ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
+            else
+                ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
+            date = ISOweekStart;
+        } else if (type === 'month') {
+            // For month input (YYYY-MM), use first day of month
+            date = new Date(dateStr + '-01');
+        } else {
+            // For date input (YYYY-MM-DD)
+            date = new Date(dateStr);
+        }
 
         switch (type) {
             case 'date':
@@ -67,6 +106,28 @@ export default function RevenuePage() {
         const totalAdvance = completedTrips.reduce((sum, t) => sum + (t.advanceAmount || 0), 0);
         const remainingRevenue = totalRevenue - totalAdvance;
 
+        // Debug logging
+        if (process.env.NODE_ENV === 'development') {
+            console.log('📊 Revenue Calculation Debug:', {
+                filterType,
+                selectedDate,
+                dateRange: range.label,
+                totalTripsLoaded: trips.length,
+                tripsInDateRange: filtered.length,
+                completedTrips: completedTrips.length,
+                totalRevenue,
+                totalAdvance,
+                remainingRevenue,
+                completedTripsData: completedTrips.map(t => ({
+                    id: t.id,
+                    amount: t.totalAmount,
+                    advance: t.advanceAmount,
+                    balance: t.totalAmount - (t.advanceAmount || 0),
+                    status: t.status
+                }))
+            });
+        }
+
         return {
             filteredTrips: filtered.sort((a, b) => {
                 const dateA = a.tripDate instanceof Object && 'toDate' in a.tripDate ? (a.tripDate as any).toDate() : new Date(a.tripDate as any);
@@ -95,7 +156,7 @@ export default function RevenuePage() {
             label: 'Completed Trips',
             value: stats.completedTrips,
             color: 'hsl(150, 70%, 40%)',
-            icon: TrendingUp
+            icon: BarChart3
         },
         {
             label: 'Total Revenue',
@@ -107,7 +168,7 @@ export default function RevenuePage() {
             label: 'Advance Received',
             value: `₹${stats.totalAdvance}`,
             color: 'hsl(45, 90%, 50%)',
-            icon: DollarSign
+            icon: Wallet
         },
         {
             label: 'Remaining to Collect',
@@ -186,47 +247,37 @@ export default function RevenuePage() {
                 <h1 className="text-xl font-bold">Revenue Report</h1>
             </div>
 
-            <div className="filters-container">
-                <Select
-                    label="Filter By"
-                    value={filterType}
-                    onChange={(e) => setFilterType(e.target.value as FilterType)}
-                    options={[
-                        { label: 'Daily', value: 'date' },
-                        // { label: 'Weekly', value: 'week' },
-                        { label: 'Monthly', value: 'month' }
-                    ]}
-                />
-
-                <Input
-                    label={
-                        filterType === 'date' ? 'Select Date' :
-                        filterType === 'week' ? 'Select Week' : 'Select Month'
-                    }
-                    type={filterType === 'date' ? 'date' : filterType === 'week' ? 'week' : 'month'}
-                    value={selectedDate}
-                    onChange={(e) => setSelectedDate(e.target.value)}
-                />
-            </div>
+            <DateRangeFilter
+                filterType={filterType}
+                selectedDate={selectedDate}
+                onFilterTypeChange={(newType) => {
+                    setFilterType(newType);
+                    setSelectedDate(getDefaultDate(newType));
+                }}
+                onDateChange={setSelectedDate}
+            />
 
             <div style={{ marginBottom: '1.5rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
                 Showing data for: <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>{stats.dateRange}</span>
             </div>
 
             <div className="stats-grid">
-                {statCards.map((stat, i) => (
-                    <Card key={i} className="stat-card">
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                            <span className="text-muted text-sm" style={{ fontWeight: 500 }}>{stat.label}</span>
-                            <div style={{ padding: '0.5rem', borderRadius: '50%', backgroundColor: `${stat.color}20` }}>
-                                <stat.icon size={20} color={stat.color} />
+                {statCards.map((stat, i) => {
+                    const IconComponent = stat.icon;
+                    return (
+                        <Card key={i} className="stat-card">
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem', gap: '0.5rem' }}>
+                                <span className="text-muted text-sm" style={{ fontWeight: 500, flex: 1 }}>{stat.label}</span>
+                                <div style={{ padding: '0.5rem', borderRadius: '50%', backgroundColor: `${stat.color}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <IconComponent size={20} color={stat.color} strokeWidth={2} />
+                                </div>
                             </div>
-                        </div>
-                        <div className="font-bold" style={{ fontSize: '1.25rem', color: stat.color }}>
-                            {stat.value}
-                        </div>
-                    </Card>
-                ))}
+                            <div className="font-bold" style={{ fontSize: '1.25rem', color: stat.color }}>
+                                {stat.value}
+                            </div>
+                        </Card>
+                    );
+                })}
             </div>
 
             <div style={{ marginTop: '2rem' }}>

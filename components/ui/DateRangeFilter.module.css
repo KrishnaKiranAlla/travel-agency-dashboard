@@ -1,0 +1,168 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.filterOptions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.filterLabel {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.filterBtn {
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background-color: var(--bg-card);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+}
+
+.filterBtn:hover {
+    background-color: var(--bg-input);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.filterBtn.active {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+}
+
+.datePickerWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    width: 100%;
+}
+
+.dateLabel {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.datePicker {
+    padding: 0.7rem 0.9rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-card);
+    color: var(--text-main);
+    font-size: 1rem; /* iOS fix: 16px minimum to prevent zoom */
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+    transition: var(--transition);
+    /* iOS specific fixes */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.datePicker:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+/* iOS Safari calendar picker indicator */
+.datePicker::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    padding: 0.3rem 0.2rem;
+    margin-right: 0.3rem;
+    opacity: 0.6;
+}
+
+/* iOS Safari: detect and apply specific styling */
+@supports (-webkit-touch-callout: none) {
+    .datePicker {
+        font-size: 16px;
+        padding: 0.8rem 1rem;
+    }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .container {
+        gap: 1rem;
+    }
+
+    .filterOptions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+
+    .filterLabel {
+        font-size: 0.85rem;
+    }
+
+    .buttonGroup {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+    }
+
+    .filterBtn {
+        padding: 0.55rem 0.75rem;
+        font-size: 16px;
+        text-align: center;
+        min-height: 44px; /* iOS touch target size */
+    }
+
+    .datePicker {
+        padding: 0.85rem 1rem;
+        font-size: 16px;
+        width: 100%;
+        max-width: 100%;
+        min-height: 44px; /* iOS touch target size */
+    }
+
+    .datePicker::-webkit-calendar-picker-indicator {
+        padding: 0.4rem 0.2rem;
+        margin-right: 0.3rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .filterBtn {
+        padding: 0.55rem 0.7rem;
+        font-size: 16px;
+        min-height: 44px;
+    }
+
+    .datePicker {
+        padding: 0.8rem 1rem;
+        font-size: 16px;
+        min-height: 44px;
+    }
+}
+
+/* iOS touch device detection - prevent zoom on interaction */
+@media (hover: none) and (pointer: coarse) {
+    .datePicker {
+        font-size: 16px;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+}
