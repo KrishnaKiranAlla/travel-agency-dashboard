@@ -106,6 +106,7 @@ export default function TripsPage() {
                 tripDate: Timestamp.fromDate(tripDate),
                 baseRate: Number(currentTrip.baseRate),
                 extraCharges: Number(currentTrip.extraCharges || 0),
+                advanceAmount: Number(currentTrip.advanceAmount || 0),
                 totalAmount: calculateTotal(Number(currentTrip.baseRate), Number(currentTrip.extraCharges)),
             } as any;
 
@@ -298,8 +299,12 @@ export default function TripsPage() {
                         <Input
                             label="Base Rate (₹)"
                             type="number"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            min="0"
+                            step="1"
                             value={currentTrip.baseRate || ''}
-                            onChange={e => setCurrentTrip({ ...currentTrip, baseRate: Number(e.target.value) })}
+                            onChange={e => setCurrentTrip({ ...currentTrip, baseRate: Math.max(0, Number(e.target.value)) })}
                             required
                         />
                     </div>
@@ -308,12 +313,33 @@ export default function TripsPage() {
                         <Input
                             label="Extra Charges (₹)"
                             type="number"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            min="0"
+                            step="1"
                             value={currentTrip.extraCharges || 0}
-                            onChange={e => setCurrentTrip({ ...currentTrip, extraCharges: Number(e.target.value) })}
+                            onChange={e => setCurrentTrip({ ...currentTrip, extraCharges: Math.max(0, Number(e.target.value)) })}
                         />
+                        <Input
+                            label="Advance Amount (₹)"
+                            type="number"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            min="0"
+                            step="1"
+                            value={currentTrip.advanceAmount || 0}
+                            onChange={e => setCurrentTrip({ ...currentTrip, advanceAmount: Math.max(0, Number(e.target.value)) })}
+                        />
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                         <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-input)', borderRadius: 'var(--radius)', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                             <span className="text-secondary text-sm">Total Amount</span>
                             <span className="font-bold" style={{ fontSize: '1.1rem', color: 'var(--color-primary)' }}>₹{calculateTotal(Number(currentTrip.baseRate), Number(currentTrip.extraCharges))}</span>
+                        </div>
+                        <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-input)', borderRadius: 'var(--radius)', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                            <span className="text-secondary text-sm">Remaining Balance</span>
+                            <span className="font-bold" style={{ fontSize: '1.1rem', color: calculateTotal(Number(currentTrip.baseRate), Number(currentTrip.extraCharges)) - (currentTrip.advanceAmount || 0) <= 0 ? 'var(--color-success)' : 'var(--color-danger)' }}>₹{Math.max(0, calculateTotal(Number(currentTrip.baseRate), Number(currentTrip.extraCharges)) - (currentTrip.advanceAmount || 0))}</span>
                         </div>
                     </div>
 

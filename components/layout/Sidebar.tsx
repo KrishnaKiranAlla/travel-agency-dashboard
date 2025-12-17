@@ -26,6 +26,7 @@ export default function Sidebar() {
         { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
         { name: 'Vehicles', href: '/vehicles', icon: Car },
         { name: 'Trips', href: '/trips', icon: Map },
+        { name: 'Revenue', href: '/revenue', icon: BarChart3 },
         { name: 'Reports', href: '/reports', icon: BarChart3 },
     ];
 

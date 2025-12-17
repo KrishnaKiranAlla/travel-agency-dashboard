@@ -21,6 +21,16 @@
     font-size: 0.9rem;
     outline: none;
     width: 100%;
+    box-sizing: border-box;
+}
+
+/* Fix date/time picker width on mobile */
+.input[type="date"],
+.input[type="time"],
+.input[type="datetime-local"],
+.input[type="month"],
+.input[type="week"] {
+    width: 100%;
 }
 
 .input::placeholder {

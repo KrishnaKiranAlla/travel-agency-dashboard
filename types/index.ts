@@ -25,6 +25,7 @@ export interface Trip {
     estimatedHours?: number;
     baseRate: number;
     extraCharges?: number;
+    advanceAmount?: number;
     totalAmount: number;
     paymentStatus: 'unpaid' | 'partial' | 'paid';
     paymentMode?: 'cash' | 'upi' | 'bank';
