@@ -266,10 +266,39 @@ export default function RevenuePage() {
                     const IconComponent = stat.icon;
                     return (
                         <Card key={i} className="stat-card">
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem', gap: '0.5rem' }}>
-                                <span className="text-muted text-sm" style={{ fontWeight: 500, flex: 1 }}>{stat.label}</span>
-                                <div style={{ padding: '0.5rem', borderRadius: '50%', backgroundColor: `${stat.color}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                    <IconComponent size={20} color={stat.color} strokeWidth={2} />
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', gap: '0.75rem' }}>
+                                <span className="text-muted text-sm" style={{ fontWeight: 500, flex: 1, minWidth: 0 }}>{stat.label}</span>
+                                <div style={{ 
+                                    padding: '0.6rem', 
+                                    borderRadius: '50%', 
+                                    backgroundColor: `${stat.color}20`, 
+                                    display: 'inline-flex', 
+                                    alignItems: 'center', 
+                                    justifyContent: 'center', 
+                                    flexShrink: 0,
+                                    width: '40px',
+                                    height: '40px',
+                                    minWidth: '40px',
+                                    minHeight: '40px'
+                                }}>
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        width: '100%',
+                                        height: '100%'
+                                    }}>
+                                        <IconComponent 
+                                            size={22} 
+                                            color={stat.color} 
+                                            strokeWidth={2}
+                                            style={{ 
+                                                display: 'block',
+                                                width: '22px',
+                                                height: '22px'
+                                            }}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                             <div className="font-bold" style={{ fontSize: '1.25rem', color: stat.color }}>

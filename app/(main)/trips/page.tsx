@@ -317,7 +317,7 @@ export default function TripsPage() {
                             pattern="[0-9]*"
                             min="0"
                             step="1"
-                            value={currentTrip.extraCharges || 0}
+                            value={currentTrip.extraCharges || ''}
                             onChange={e => setCurrentTrip({ ...currentTrip, extraCharges: Math.max(0, Number(e.target.value)) })}
                         />
                         <Input
@@ -327,7 +327,7 @@ export default function TripsPage() {
                             pattern="[0-9]*"
                             min="0"
                             step="1"
-                            value={currentTrip.advanceAmount || 0}
+                            value={currentTrip.advanceAmount || ''}
                             onChange={e => setCurrentTrip({ ...currentTrip, advanceAmount: Math.max(0, Number(e.target.value)) })}
                         />
                     </div>

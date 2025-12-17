@@ -237,3 +237,25 @@ textarea {
   margin-bottom: 1rem;
   opacity: 0.5;
 }
+
+/* SVG Icon Rendering - Fix for mobile/iOS */
+svg {
+  overflow: visible;
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+/* Lucide React icons - ensure they render properly on all devices */
+svg[stroke-linecap="round"] {
+  paint-order: stroke;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Force icon rendering on iOS Safari */
+@supports (-webkit-touch-callout: none) {
+  svg {
+    -webkit-filter: drop-shadow(0 0 0px transparent);
+    filter: drop-shadow(0 0 0px transparent);
+  }
+}
